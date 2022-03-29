@@ -1,6 +1,5 @@
 from django.test import Client, TestCase
 from django.urls import reverse
-from django import forms
 from ..models import Post, Group, User
 from django.core.cache import cache
 

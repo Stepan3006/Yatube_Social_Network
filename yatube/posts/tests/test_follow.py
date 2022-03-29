@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from http import HTTPStatus
-from ..models import Post, Group, User, Follow
+from ..models import Post, Group, User
 
 
 class PostURLTests(TestCase):
