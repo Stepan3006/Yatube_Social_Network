@@ -1,7 +1,8 @@
-from ..forms import PostForm, CommentForm
-from ..models import Post, Group, User, Comment
 from django.test import Client, TestCase
 from django.urls import reverse
+
+from ..forms import CommentForm, PostForm
+from ..models import Comment, Group, Post, User
 
 
 class PostCreateFormTests(TestCase):
