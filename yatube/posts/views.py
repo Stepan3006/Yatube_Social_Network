@@ -8,14 +8,15 @@ from .models import Comment, Follow, Group, Post, User
 COUNT_POSTS = 10
 
 
-def paginator_post(post_list):
-    return Paginator(post_list, COUNT_POSTS)
+def paginator_post(request, post_list):
+    paginator = Paginator(post_list, COUNT_POSTS)
+    page_number = request.GET.get('page')
+    return paginator.get_page(page_number)
 
 
 def index(request):
     post_list = Post.objects.all()
-    page_number = request.GET.get('page')
-    page_obj = paginator_post(post_list).get_page(page_number)
+    page_obj = paginator_post(request, post_list)
     context = {
         'page_obj': page_obj,
     }
@@ -25,8 +26,7 @@ def index(request):
 def group_posts(request, slug):
     group = get_object_or_404(Group, slug=slug)
     posts = group.posts.all()
-    page_number = request.GET.get('page')
-    page_obj = paginator_post(posts).get_page(page_number)
+    page_obj = paginator_post(request, posts)
     context = {
         'group': group,
         'posts': posts,
@@ -38,8 +38,7 @@ def group_posts(request, slug):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     post = author.posts.all().order_by('-pub_date')
-    page_number = request.GET.get('page')
-    page_obj = paginator_post(post).get_page(page_number)
+    page_obj = paginator_post(request, post)
     following = request.user.is_authenticated and author.following.filter(
         user=request.user
     ).exists()
@@ -117,8 +116,7 @@ def follow_index(request):
     post_list = Post.objects.filter(
         author__following__user=request.user
     )
-    page_number = request.GET.get('page')
-    page_obj = paginator_post(post_list).get_page(page_number)
+    page_obj = paginator_post(request, post_list)
     context = {
         'page_obj': page_obj,
     }

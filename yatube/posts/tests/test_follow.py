@@ -26,10 +26,9 @@ class PostURLTests(TestCase):
         self.authorized_client_unfollow = Client()
         self.authorized_client_unfollow.force_login(self.user_unfollow)
 
-    def test_login_make_or_delete_follow(self):
+    def test_login_make_follow(self):
         """Авторизованный может
         подписываться на других пользователей
-        и удалять их из подписок.
         """
         follow_count = Follow.objects.count()
         self.response = self.authorized_client_follow.get(
@@ -43,12 +42,28 @@ class PostURLTests(TestCase):
         ).exists()
         )
         self.assertEqual(follow_count + 1, Follow.objects.count())
+
+    def test_login_make_unfollow(self):
+        """Авторизованный может
+        отписываться на других пользователей
+        """
+        self.response = self.authorized_client_follow.get(
+            reverse(
+                'posts:profile_follow', args=[self.user]
+            ),
+        )
+        follow_count = Follow.objects.count()
         self.response = self.authorized_client_follow.get(
             reverse(
                 'posts:profile_unfollow', args=[self.user]
             ),
         )
-        self.assertEqual(follow_count, Follow.objects.count())
+        self.assertFalse(Follow.objects.filter(
+            user=self.user_follow,
+            author=self.user,
+        ).exists()
+        )
+        self.assertEqual(follow_count - 1, Follow.objects.count())
 
     def test_post_appears_follow_page(self):
         """Пост появляется на главной странице, подписчика"""
